@@ -102,7 +102,7 @@ app.post("/login", (req, res) => {
           );
           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
             .then((updatedUser) => {
-              res.cookie("token", Token, { httpOnly: true, secure: true, sameSite: 'None' });
+              res.cookie("token", Token, { HttpOnly: true, secure: false, SameSite: 'None' });
               return res.json(updatedUser);
             })
             .catch((err) => {
