@@ -53,7 +53,7 @@ app.post("/register", async (req, res) => {
       { token: token },
       { new: true }
     );
-    res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'None' });
+    res.cookie("token", token, { httpOnly: true, secure: true, sameSite: None });
     res.json({ status: "ok", user: updatedUser._id, token: token });
   } catch (err) {
     res.status(500).json(err);
