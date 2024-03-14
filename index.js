@@ -53,7 +53,7 @@ app.post("/register", async (req, res) => {
       { token: token },
       { new: true }
     );
-    res.cookie("token", token, { httpOnly: true, secure: true, sameSite: None });
+    res.cookie("token", token, { httpOnly: true, secure: false, SameSite: 'None' });
     res.json({ status: "ok", user: updatedUser._id, token: token });
   } catch (err) {
     res.status(500).json(err);
@@ -102,7 +102,7 @@ app.post("/login", (req, res) => {
           );
           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
             .then((updatedUser) => {
-              res.cookie("token", Token, { HttpOnly: true, secure: false, SameSite: 'None' });
+              res.cookie("token", Token, { HttpOnly: true, secure: false, SameSite: None });
               return res.json(updatedUser);
             })
             .catch((err) => {
