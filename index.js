@@ -11,11 +11,11 @@ const Product = require("./src/models/product.model.js");
 
 const app = express();
 app.use(express.json());
-const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
-};
+// const corsOptions = {
+//   origin: "http://localhost:3000",
+//   credentials: true, //access-control-allow-credentials:true
+//   optionSuccessStatus: 200,
+// };
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -29,7 +29,7 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use(CookieParser());
 
