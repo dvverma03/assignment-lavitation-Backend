@@ -104,12 +104,9 @@ app.post("/login", (req, res) => {
           );
           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
             .then((updatedUser) => {
-              const isProduction = process.env.NODE_ENV === "production";
-              res.cookie("token", Token, {
-                httpOnly: true,
-                secure: isProduction,
-                sameSite: isProduction ? "None" : "Lax",
-              });
+              res.cookie("token", Token, { httpOnly: true,
+              secure: true, 
+              sameSite: 'None'  });
 
               return res.json(updatedUser);
             })
