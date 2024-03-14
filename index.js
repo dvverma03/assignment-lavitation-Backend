@@ -119,7 +119,9 @@ app.post("/login", (req, res) => {
             .then((updatedUser) => {
               res.cookie("token", Token, { httpOnly: true,
               secure: true, 
-              sameSite: 'None'  });
+              sameSite: 'None',
+              domain:'https://assignment-lavitation-backend.vercel.app/',
+              path:'/' });
 
               return res.json(updatedUser);
             })
