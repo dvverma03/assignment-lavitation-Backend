@@ -17,13 +17,31 @@ app.use(express.json());
 //   optionSuccessStatus: 200,
 // };
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000/');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
+// app.use(cors({
+//     origin: 'http://localhost:3000', // Match client origin exactly
+//     credentials: true,
+//     optionSuccessStatus: 200,
+// }));
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000/');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   res.setHeader('Access-Control-Allow-Credentials', 'true');
+//   if (req.method === 'OPTIONS') {
+//     res.sendStatus(200);
+
+app.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', true);
+    res.sendStatus(204);
+});
+
   } else {
     next();
   }
