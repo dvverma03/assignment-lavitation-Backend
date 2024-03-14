@@ -11,45 +11,13 @@ const Product = require("./src/models/product.model.js");
 
 const app = express();
 app.use(express.json());
-// const corsOptions = {
-//   origin: "http://localhost:3000",
-//   credentials: true, //access-control-allow-credentials:true
-//   optionSuccessStatus: 200,
-// };
-
-// app.use(cors({
-//     origin: 'http://localhost:3000', // Match client origin exactly
-//     credentials: true,
-//     optionSuccessStatus: 200,
-// }));
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000/');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//   res.setHeader('Access-Control-Allow-Credentials', 'true');
-//   if (req.method === 'OPTIONS') {
-//     res.sendStatus(200);
-
-app.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.sendStatus(200);
-});
-
-  } else {
-    next();
-  }
-});
-
-// app.use(cors(corsOptions));
-
 app.use(CookieParser());
+
+// CORS configuration
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 
 mongoose
   .connect(process.env.DATABASE_URL, {
@@ -85,13 +53,12 @@ app.post("/register", async (req, res) => {
       { token: token },
       { new: true }
     );
-    res.cookie("token", token);
+    res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'None' });
     res.json({ status: "ok", user: updatedUser._id, token: token });
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
 
 app.post("/add-invoice", async (req, res) => {
   console.log(req.body);
@@ -135,12 +102,7 @@ app.post("/login", (req, res) => {
           );
           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
             .then((updatedUser) => {
-              res.cookie("token", Token, { httpOnly: true,
-              secure: true, 
-              sameSite: 'None',
-              domain:'https://assignment-lavitation-backend.vercel.app/',
-              path:'/' });
-
+              res.cookie("token", Token, { httpOnly: true, secure: true, sameSite: 'None' });
               return res.json(updatedUser);
             })
             .catch((err) => {
@@ -177,39 +139,6 @@ app.post("/logout", (req, res) => {
     }
   });
 });
-
-// app.post("/login", (req, res) => {
-//   const { email, password } = req.body;
-//   User.findOne({ email: email }).then((user) => {
-//     if (user) {
-//       console.log(user);
-//       bcrypt.compare(password, user.password, (err, response) => {
-//         if (response) {
-//           const Token = jwt.sign(
-//             {
-//               _id: user._id,
-//               email: user.email,
-//               username: user.username,
-//               fullName: user.fullName,
-//             },
-//             process.env.ACCESS_TOKEN_SECRET,
-//             {
-//               expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-//             }
-//           );
-//           res.cookie("token", Token);
-//           console.log(user);
-//           console.log(user.products);
-//           return res.json(user);
-//         } else {
-//           return res.json("Password is incorrect");
-//         }
-//       });
-//     } else {
-//       return res.json("No record find");
-//     }
-//   });
-// });
 
 app.post("/browse", (req, res) => {
   const { token1 } = req.body;
