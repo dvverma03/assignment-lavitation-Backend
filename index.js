@@ -39,7 +39,7 @@ app.options('*', (req, res) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Credentials', true);
-    res.sendStatus(204);
+    res.sendStatus(200);
 });
 
   } else {
