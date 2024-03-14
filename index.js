@@ -88,7 +88,6 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email: email }).then((user) => {
     if (user) {
-      console.log(user);
       bcrypt.compare(password, user.password, (err, response) => {
         if (response) {
           const Token = jwt.sign(
@@ -103,19 +102,21 @@ app.post("/login", (req, res) => {
               expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
             }
           );
-          User.findByIdAndUpdate(
-            user._id,
-            { token: Token },
-            { new: true }
-          ).then((updatedUser) => {
-            res.cookie("token", Token);
-            console.log(updatedUser);
-            console.log(updatedUser.products);
-            return res.json(updatedUser);
-          }).catch((err) => {
-            console.error("Error updating token:", err);
-            return res.status(500).json({ error: "Internal server error" });
-          });
+          User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
+            .then((updatedUser) => {
+              const isProduction = process.env.NODE_ENV === "production";
+              res.cookie("token", Token, {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? "None" : "Lax",
+              });
+
+              return res.json(updatedUser);
+            })
+            .catch((err) => {
+              console.error("Error updating token:", err);
+              return res.status(500).json({ error: "Internal server error" });
+            });
         } else {
           return res.json("Password is incorrect");
         }
