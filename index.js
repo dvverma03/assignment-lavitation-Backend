@@ -83,6 +83,7 @@ app.post("/add-invoice", async (req, res) => {
   }
 });
 
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email: email }).then((user) => {
@@ -103,8 +104,9 @@ app.post("/login", (req, res) => {
           );
           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
             .then((updatedUser) => {
-              res.cookie("token", Token);
-              res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+              res.cookie("token", Token, { httpOnly: true, secure: true });
+              // Set Access-Control-Allow-Origin header to the origin of the request
+              res.header("Access-Control-Allow-Origin", req.headers.origin);
               res.header("Access-Control-Allow-Credentials", true);
               return res.json(updatedUser);
             })
@@ -121,6 +123,48 @@ app.post("/login", (req, res) => {
     }
   });
 });
+
+
+
+
+// app.post("/login", (req, res) => {
+//   const { email, password } = req.body;
+//   User.findOne({ email: email }).then((user) => {
+//     if (user) {
+//       bcrypt.compare(password, user.password, (err, response) => {
+//         if (response) {
+//           const Token = jwt.sign(
+//             {
+//               _id: user._id,
+//               email: user.email,
+//               username: user.username,
+//               fullName: user.fullName,
+//             },
+//             process.env.ACCESS_TOKEN_SECRET,
+//             {
+//               expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+//             }
+//           );
+//           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
+//             .then((updatedUser) => {
+//               res.cookie("token", Token);
+//               res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//               res.header("Access-Control-Allow-Credentials", true);
+//               return res.json(updatedUser);
+//             })
+//             .catch((err) => {
+//               console.error("Error updating token:", err);
+//               return res.status(500).json({ error: "Internal server error" });
+//             });
+//         } else {
+//           return res.json("Password is incorrect");
+//         }
+//       });
+//     } else {
+//       return res.json("No record found");
+//     }
+//   });
+// });
 
 app.post("/logout", (req, res) => {
   const { token1 } = req.body;
