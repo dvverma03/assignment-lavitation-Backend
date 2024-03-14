@@ -8,16 +8,17 @@ const { DATABASE_NAME } = require("./src/constants.js");
 require("dotenv").config();
 const User = require("./src/models/user.model.js");
 const Product = require("./src/models/product.model.js");
-
 const app = express();
 app.use(express.json());
 app.use(CookieParser());
 
-// CORS configuration
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
+app.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.sendStatus(200);
+});
 
 mongoose
   .connect(process.env.DATABASE_URL, {
@@ -49,11 +50,11 @@ app.post("/register", async (req, res) => {
     });
 
     const updatedUser = await User.findByIdAndUpdate(
-      createdUser._id, // Use createdUser._id instead of user._id
+      createdUser._id,
       { token: token },
       { new: true }
     );
-    res.cookie("token", token, { httpOnly: true, secure: false, SameSite: 'None' });
+    res.cookie("token", token);
     res.json({ status: "ok", user: updatedUser._id, token: token });
   } catch (err) {
     res.status(500).json(err);
@@ -102,7 +103,9 @@ app.post("/login", (req, res) => {
           );
           User.findByIdAndUpdate(user._id, { token: Token }, { new: true })
             .then((updatedUser) => {
-              res.cookie("token", Token, { HttpOnly: true, secure: false, SameSite: None });
+              res.cookie("token", Token);
+              res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+              res.header("Access-Control-Allow-Credentials", true);
               return res.json(updatedUser);
             })
             .catch((err) => {
