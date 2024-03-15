@@ -12,13 +12,10 @@ const app = express();
 app.use(express.json());
 app.use(CookieParser());
 
-app.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.sendStatus(200);
-});
+app.use(cors({
+  origin: ["http://localhost:3000", "https://assignment-lavitation-frontend.vercel.app"],
+  credentials: true
+}));
 
 mongoose
   .connect(process.env.DATABASE_URL, {
